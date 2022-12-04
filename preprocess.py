@@ -14,7 +14,7 @@ def preprocess(data_dir, split):
     images_dir = join(data_dir, "formula_images_processed")
 
     formulas_file = join(data_dir, "im2latex_formulas.norm.lst")
-    with open(formulas_file, 'r') as f:
+    with open(formulas_file, 'r', encoding="ISO-8859-1") as f:
         formulas = [formula.strip('\n') for formula in f.readlines()]
 
     split_file = join(data_dir, "im2latex_{}_filter.lst".format(split))
