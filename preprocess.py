@@ -20,7 +20,7 @@ def preprocess(data_dir, split):
     split_file = join(data_dir, "im2latex_{}_filter.lst".format(split))
     pairs = []
     transform = transforms.ToTensor()
-    with open(split_file, 'r') as f:
+    with open(split_file, 'r', encoding="ISO-8859-1") as f:
         for line in f:
             img_name, formula_id = line.strip('\n').split()
             # load img and its corresponding formula
