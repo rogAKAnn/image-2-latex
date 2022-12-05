@@ -22,7 +22,7 @@ def preprocess(data_dir, split):
     transform = transforms.ToTensor()
     with open(split_file, 'r', encoding="ISO-8859-1") as f:
         for line in f:
-            img_name, formula_id = line.strip('\n').split()
+            formula_id, img_name, _ = line.strip('\n').split()
             # load img and its corresponding formula
             img_path = join(images_dir, img_name)
             img = Image.open(img_path)

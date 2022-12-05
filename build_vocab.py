@@ -38,12 +38,12 @@ def build_vocab(data_dir, min_count=10):
     counter = Counter()
 
     formulas_file = join(data_dir, 'im2latex_formulas.norm.lst')
-    with open(formulas_file, 'r') as f:
+    with open(formulas_file, 'r', encoding="ISO-8859-1") as f:
         formulas = [formula.strip('\n') for formula in f.readlines()]
 
-    with open(join(data_dir, 'im2latex_train_filter.lst'), 'r') as f:
+    with open(join(data_dir, 'im2latex_train_filter.lst'), 'r', encoding="ISO-8859-1") as f:
         for line in f:
-            _, idx = line.strip('\n').split()
+            idx, _, __ = line.strip('\n').split()
             idx = int(idx)
             formula = formulas[idx].split()
             counter.update(formula)
