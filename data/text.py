@@ -1,9 +1,8 @@
-import json
-import re
 import torch
 from torch import Tensor
+import json
+import re
 from abc import ABC, abstractmethod
-
 
 class Text(ABC):
     def __init__(self):
@@ -25,7 +24,7 @@ class Text(ABC):
 class Text100k(Text):
     def __init__(self):
         super().__init__()
-        self.id2word = json.load(open("data/vocab/100k_vocab.json", "r"))
+        self.id2word = json.load(open("./data/vocab/100k_vocab.json", "r"))
         self.word2id = dict(zip(self.id2word, range(len(self.id2word))))
         self.TOKENIZE_PATTERN = re.compile(
             "(\\\\[a-zA-Z]+)|" + '((\\\\)*[$-/:-?{-~!"^_`\[\]])|' + "(\w)|" + "(\\\\)"
@@ -36,15 +35,3 @@ class Text100k(Text):
         tokens = re.finditer(self.TOKENIZE_PATTERN, formula)
         tokens = list(map(lambda x: x.group(0), tokens))
         tokens = [x for x in tokens if x is not None and x != ""]
-        return tokens
-
-
-class Text170k(Text):
-    def __init__(self):
-        super().__init__()
-        self.id2word = json.load(open("data/vocab/170k_vocab.json", "r"))
-        self.word2id = dict(zip(self.id2word, range(len(self.id2word))))
-        self.n_class = len(self.id2word)
-
-    def tokenize(self, formula: str):
-        return formula.split()

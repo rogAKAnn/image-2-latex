@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 from torchvision import transforms as tvt
 
-
 class DataModule(pl.LightningDataModule):
     def __init__(
         self,
@@ -57,7 +56,7 @@ class DataModule(pl.LightningDataModule):
         )
 
     def predict_dataloader(self):
-        return DataLoader(self.predict_set, shuffle=False, batch_size=self.batch_size,)
+        return DataLoader(self.predict_set, shuffle=False, batch_size=1,)
 
     def collate_fn(self, batch):
         size = len(batch)
@@ -69,6 +68,8 @@ class DataModule(pl.LightningDataModule):
         formulas = torch.cat((sos, formulas, eos), dim=-1).to(dtype=torch.long)
 
         images = [i[0] for i in batch]
+        
+        images_name = [i[-1] for i in batch]
         max_width, max_height = 0, 0
         for img in images:
             c, h, w = img.size()
@@ -81,4 +82,6 @@ class DataModule(pl.LightningDataModule):
             return padder(img)
 
         images = torch.stack(list(map(padding, images))).to(dtype=torch.float)
-        return images, formulas, formula_len
+        
+#         images = torch.stack(images).to(dtype=torch.float)
+        return images, formulas, formula_len, images_name

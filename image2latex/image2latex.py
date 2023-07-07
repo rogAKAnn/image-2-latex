@@ -1,17 +1,16 @@
-import random
 import torch
 from torch import nn, Tensor
-from .decoder import Decoder
-from .encoder import *
-from .text import Text
 
+from data.text import Text, Text100k
+
+from image2latex.convwithpe import ConvEncoderWithPE
+from image2latex.decoder import Decoder
 
 class Image2Latex(nn.Module):
     def __init__(
         self,
         n_class: int,
         enc_dim: int = 512,
-        enc_type: str = "conv_row_encoder",
         emb_dim: int = 80,
         dec_dim: int = 512,
         attn_dim: int = 512,
@@ -24,25 +23,10 @@ class Image2Latex(nn.Module):
         sos_id: int = 1,
         eos_id: int = 2,
     ):
-        assert enc_type in [
-            "conv_row_encoder",
-            "conv_encoder",
-            "conv_bn_encoder",
-            "resnet_encoder",
-            "resnet_row_encoder",
-        ], "Not found encoder"
+        
         super().__init__()
         self.n_class = n_class
-        if enc_type == "conv_row_encoder":
-            self.encoder = ConvWithRowEncoder(enc_dim=enc_dim)
-        elif enc_type == "conv_encoder":
-            self.encoder = ConvEncoder(enc_dim=enc_dim)
-        elif enc_type == "conv_bn_encoder":
-            self.encoder = ConvBNEncoder(enc_dim=enc_dim)
-        elif enc_type == "resnet_encoder":
-            self.encoder = ResNetEncoder(enc_dim=enc_dim)
-        elif enc_type == "resnet_row_encoder":
-            self.encoder = ResNetWithRowEncoder(enc_dim=enc_dim)
+        self.encoder = ConvEncoderWithPE(enc_dim=enc_dim)
         enc_dim = self.encoder.enc_dim
         self.num_layers = num_layers
         self.decoder = Decoder(
@@ -68,6 +52,8 @@ class Image2Latex(nn.Module):
         """
             return (h, c)
         """
+        # V has size (bs, -1, d)
+        
         encoder_mean = V.mean(dim=1)
         h = torch.tanh(self.init_h(encoder_mean))
         c = torch.tanh(self.init_c(encoder_mean))
@@ -77,7 +63,7 @@ class Image2Latex(nn.Module):
         encoder_out = self.encoder(x)
 
         hidden_state = self.init_decoder_hidden_state(encoder_out)
-
+ 
         predictions = []
         for t in range(y_len.max().item()):
             dec_input = y[:, t].unsqueeze(1)
@@ -94,27 +80,6 @@ class Image2Latex(nn.Module):
         elif self.decode_type == "beamsearch":
             predict = self.decode_beam_search(x, max_length)
         return self.text.int2text(predict)
-
-    def decode_greedy(self, x: Tensor, max_length: int = 150):
-        encoder_out = self.encoder(x)
-        bs = encoder_out.size(0)
-
-        hidden_state = self.init_decoder_hidden_state(encoder_out)
-
-        y = torch.LongTensor([self.decoder.sos_id]).view(bs, -1)
-
-        hidden_state = self.init_decoder_hidden_state(encoder_out)
-
-        predictions = []
-        for t in range(max_length):
-            out, hidden_state = self.decoder(y, encoder_out, hidden_state)
-
-            k = out.argmax().item()
-
-            predictions.append(k)
-
-            y = torch.LongTensor([k]).view(bs, -1)
-        return predictions
 
     def decode_beam_search(self, x: Tensor, max_length: int = 150):
         """
@@ -135,7 +100,9 @@ class Image2Latex(nn.Module):
                 out, hidden_state = self.decoder(y, encoder_out, state)
 
                 topk = out.topk(self.beam_width)
+                
                 new_log_prob = topk.values.view(-1).tolist()
+                
                 new_idx = topk.indices.view(-1).tolist()
                 for val, idx in zip(new_log_prob, new_idx):
                     new_inp = inp + [idx]

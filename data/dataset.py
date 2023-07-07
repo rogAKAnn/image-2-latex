@@ -5,7 +5,7 @@ import torchvision
 from torchvision import transforms as tvt
 import math
 import os
-
+import glob
 
 class LatexDataset(Dataset):
     def __init__(
@@ -19,7 +19,8 @@ class LatexDataset(Dataset):
             df = df.head(n_sample)
         df["image"] = df.image.map(lambda x: img_path + "/" + x)
         self.walker = df.to_dict("records")
-        self.transform = tvt.Compose([tvt.Normalize((0.5), (0.5)),])
+#         self.transform = tvt.Compose([tvt.Normalize((0.5), (0.5)),])
+        self.transform = tvt.Compose([tvt.Grayscale(),])
 
     def __len__(self):
         return len(self.walker)
@@ -32,18 +33,20 @@ class LatexDataset(Dataset):
         image = image.to(dtype=torch.float)
         image /= image.max()
         image = self.transform(image)  # transform image to [-1, 1]
-        return image, formula
-
+        return image, formula, os.path.basename(item['image'])
 
 class LatexPredictDataset(Dataset):
     def __init__(self, predict_img_path: str):
         super().__init__()
         if predict_img_path:
             assert os.path.exists(predict_img_path), "Image not found"
-            self.walker = [predict_img_path]
+            self.walker = glob.glob(predict_img_path + '/*.png')
+
+#             self.walker = [predict_img_path]
         else:
-            self.walker = []
-        self.transform = tvt.Compose([tvt.Normalize((0.5), (0.5)),])
+            self.walker = glob.glob(predict_img_path + '/*.png')
+#         self.transform = tvt.Compose([tvt.Normalize((0.5), (0.5)),])
+        self.transform = tvt.Compose([tvt.Grayscale(),])
 
     def __len__(self):
         return len(self.walker)
@@ -56,4 +59,4 @@ class LatexPredictDataset(Dataset):
         image /= image.max()
         image = self.transform(image)  # transform image to [-1, 1]
 
-        return image
+        return image, os.path.basename(img_path)
