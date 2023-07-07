@@ -1,0 +1,1 @@
+\xi _ { n } ( u ) = \operatorname { s i n } \Bigl ( \frac { \pi n u } { t } \Bigr ) \qquad n = 1 , 2 , \ldots

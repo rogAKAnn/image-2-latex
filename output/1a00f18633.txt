@@ -1,0 +1,1 @@
+\mathrm { d i a g } ( \theta _ { 1 } , - \theta _ { 1 } , \cdots , \theta _ { N / 2 } , - \theta _ { N / 2 } ) .
