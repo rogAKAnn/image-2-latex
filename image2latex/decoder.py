@@ -71,18 +71,11 @@ class Decoder(nn.Module):
         rnn_input = rnn_input.unsqueeze(1)
         hidden_state = h.unsqueeze(0), c.unsqueeze(0)
         
-        
-        
-        # rnn_input = tensor of size (batch_size, seq_length, input_size=dec_dim)
-        # hidden_state = tuple of two tensors size (2 * num_layers, batch_size, hidden_size=dec_dim) 
-        # and (2 * num_layers, batch_size, input_size=dec_dim)
-        
         out, hidden_state = self.rnn(rnn_input, hidden_state)
         
         out = self.dropout(out)
         
         out, hidden_state = self.rnn2(out, hidden_state)
-        # out = self.layernorm(out)
         out = self.logsoftmax(self.out(out))
         h, c = hidden_state
         return out, (h.squeeze(0), c.squeeze(0))
