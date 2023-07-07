@@ -74,11 +74,7 @@ class Image2Latex(nn.Module):
         return predictions
 
     def decode(self, x: Tensor, max_length: int = 150):
-        predict = []
-        if self.decode_type == "greedy":
-            predict = self.decode_greedy(x, max_length)
-        elif self.decode_type == "beamsearch":
-            predict = self.decode_beam_search(x, max_length)
+        predict = self.decode_beam_search(x, max_length)
         return self.text.int2text(predict)
 
     def decode_beam_search(self, x: Tensor, max_length: int = 150):

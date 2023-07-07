@@ -50,18 +50,6 @@ class Image2LatexModel(pl.LightningModule):
         self.save_hyperparameters()
         self.pairs = []
 
-    # def configure_optimizers(self):
-    #     optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, betas=(0.9, 0.98))
-    #     scheduler = torch.optim.lr_scheduler.OneCycleLR(
-    #         optimizer, max_lr=self.lr, total_steps=self.total_steps, verbose=False,
-    #     )
-    #     scheduler = {
-    #         "scheduler": scheduler,
-    #         "interval": "step",  # or 'epoch'
-    #         "frequency": 1,
-    #     }
-    #     return [optimizer], [scheduler]
-
     def forward(self, images, formulas, formula_len):
         return self.model(images, formulas, formula_len)
 

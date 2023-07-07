@@ -58,11 +58,6 @@ class ConvEncoderWithPE(nn.Module):
         pe[:,:,0::2] = torch.sin(pe[:,:,0::2])
         pe[:,:,1::2] = torch.cos(pe[:,:,1::2])
         
-#         pe =pe.unsqueeze(0)
-        
-#         print(fc.size())
-#         fc = self.batch_norm((fc+pe).reshape(bs, c, h, w))
-
         fc = fc + pe
         
         return self.dropout(fc).reshape(bs, -1, c)     
