@@ -1,3 +1,5 @@
+import torch
+from torch import nn, Tensor
 
 class Attention(nn.Module):
     def __init__(self, enc_dim: int = 512, dec_dim: int = 512, attn_dim: int = 512):

@@ -1,3 +1,7 @@
+
+import torch
+from torch import nn, Tensor
+
 class ConvEncoderWithPE(nn.Module):
     def __init__(self, enc_dim:int, drop_out: float=0.1):
         super(ConvEncoderWithPE, self).__init__()
@@ -25,8 +29,8 @@ class ConvEncoderWithPE(nn.Module):
             self.div_term += [i] * 2
         self.div_term = self.div_term * 2
         self.div_term = list(map(lambda x: float(x)/float(512), self.div_term))
-        self.div_term = torch.tensor(self.div_term).cuda()
-        self.div_term = torch.pow(10000, self.div_term).cuda()
+        self.div_term = torch.tensor(self.div_term)
+        self.div_term = torch.pow(10000, self.div_term)
         
         self.half_enc_dim = int(self.enc_dim / 2)
             
@@ -40,11 +44,11 @@ class ConvEncoderWithPE(nn.Module):
         
         bs, h, w, c = fc.size()
         
-        pe = torch.zeros(h, w, c).cuda()
+        pe = torch.zeros(h, w, c)
         
-        x_pos = torch.arange(0, w).unsqueeze(1).cuda()
-        y_pos = torch.arange(0, h).unsqueeze(1).cuda()
-        y_pos = y_pos.repeat(1, w).unsqueeze(-1).cuda()
+        x_pos = torch.arange(0, w).unsqueeze(1)
+        y_pos = torch.arange(0, h).unsqueeze(1)
+        y_pos = y_pos.repeat(1, w).unsqueeze(-1)
     
         pe[:,:,0:self.half_enc_dim] = x_pos
         pe[:,:,self.half_enc_dim:] = y_pos

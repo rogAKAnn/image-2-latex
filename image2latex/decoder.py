@@ -1,3 +1,6 @@
+import torch
+from torch import nn
+from image2latex.attention import Attention
 
 
 class Decoder(nn.Module):

@@ -1,9 +1,16 @@
+import torch
+from torch import nn, Tensor
+
+from data.text import Text, Text100k
+
+from image2latex.convwithpe import ConvEncoderWithPE
+from image2latex.decoder import Decoder
+
 class Image2Latex(nn.Module):
     def __init__(
         self,
         n_class: int,
         enc_dim: int = 512,
-        enc_type: str = "conv_row_encoder",
         emb_dim: int = 80,
         dec_dim: int = 512,
         attn_dim: int = 512,

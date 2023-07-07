@@ -40,11 +40,11 @@ class LatexPredictDataset(Dataset):
         super().__init__()
         if predict_img_path:
             assert os.path.exists(predict_img_path), "Image not found"
-            self.walker = glob.glob(predict_img_path + '/*.jpg')
+            self.walker = glob.glob(predict_img_path + '/*.png')
 
 #             self.walker = [predict_img_path]
         else:
-            self.walker = glob.glob(predict_img_path + '/*.jpg')
+            self.walker = glob.glob(predict_img_path + '/*.png')
 #         self.transform = tvt.Compose([tvt.Normalize((0.5), (0.5)),])
         self.transform = tvt.Compose([tvt.Grayscale(),])
 
