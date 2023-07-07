@@ -1,9 +1,0 @@
-numpy
-pandas
-pytorch-lightning
-torchaudio
-torchmetrics
-torchtext
-torchvision
-evaluate
-wandb
